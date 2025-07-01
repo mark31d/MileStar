@@ -9,7 +9,7 @@ workflows:
         distribution_type: app_store
         bundle_identifier: com.MileStar
       vars:
-        APP_STORE_APPLE_ID: 6741929642
+        APP_STORE_APPLE_ID: 6748040797
         BUNDLE_ID: 'com.MileStar'
         XCODE_WORKSPACE: 'MileStar.xcworkspace'
         CODE_SCHEME: 'MileStar'
