@@ -1,0 +1,13 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/Prompt-SemiBoldItalic.ttf",
+      "sha1": "493dc598382113851ff049adfd1d6023b2806422"
+    },
+    {
+      "path": "assets/fonts/ProstoOne-Regular.ttf",
+      "sha1": "b18ae80cb7d295f5b5a674abd45e4538d8d6deaf"
+    }
+  ]
+}
