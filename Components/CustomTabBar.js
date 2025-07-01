@@ -12,11 +12,9 @@ import LinearGradient from 'react-native-linear-gradient';
 
 const { width } = Dimensions.get('window');
 
-// градиент для бордера и FAB
 const BORDER_GRAD = ['#FEF6BA', '#B38028'];
 const DARK        = '#000';
 
-// иконки
 const ICONS = {
   Dashboard: require('../assets/book.png'),
   Saved:     require('../assets/book_mark.png'),
@@ -25,24 +23,23 @@ const ICONS = {
   Settings:  require('../assets/gear.png'),
 };
 
-// размеры
-const BAR  = 68;  // высота капсулы
-const PLUS = 84;  // диаметр FAB
-const ICON = 26;  // размер иконок
+const BAR  = 68;   // высота капсулы
+const PLUS = 84;   // диаметр FAB
+const ICON = 26;   // размер иконок
 
 export default function CustomTabBar({ state, navigation }) {
   const inset = useSafeAreaInsets();
-  const route = state.routes[state.index];
-  const isOnDashboard = route.name === 'Dashboard';
+  const { routes, index } = state;
+  const current = routes[index].name;
+  const isOnDashboard = current === 'Dashboard';
 
-  // навигация по табам: Dashboard → Stories, остальные — как обычно
   const go = (name) => {
-    if (name === 'Dashboard') {
-      navigation.navigate('Stories');
-    } else if (route.name !== name) {
-      navigation.navigate(name);
-    }
+    if (name === 'Dashboard') navigation.navigate('Stories');
+    else if (current !== name) navigation.navigate(name);
   };
+
+  /* ↓ вычисляем выравнивание FAB в рантайме */
+  const fabBottom = (BAR - PLUS) / 2 + inset.bottom + 8; // 8 px — тот же отступ, что у обёртки
 
   return (
     <View style={[styles.wrap, { paddingBottom: inset.bottom + 8 }]}>
@@ -53,42 +50,39 @@ export default function CustomTabBar({ state, navigation }) {
         end={{   x: 0.5, y: 1 }}
         style={styles.border}
       >
-        {/* Внутренняя чёрная капсула */}
+        {/* Чёрная капсула: margin = толщине бордера */}
         <View style={styles.bar}>
           {['Dashboard', 'Saved'].map((n) => (
             <TabBtn
               key={n}
               icon={ICONS[n]}
-              active={!isOnDashboard && route.name === n}
+              active={!isOnDashboard && current === n}
               onPress={() => go(n)}
             />
           ))}
 
-          {/* Пробел под FAB */}
+          {/* место под FAB */}
           <View style={{ width: PLUS }} />
 
           {['Archive', 'Settings'].map((n) => (
             <TabBtn
               key={n}
               icon={ICONS[n]}
-              active={!isOnDashboard && route.name === n}
+              active={!isOnDashboard && current === n}
               onPress={() => go(n)}
             />
           ))}
         </View>
       </LinearGradient>
 
-      {/* FAB «+» по центру капсулы */}
+      {/* FAB */}
       <TouchableOpacity
         activeOpacity={0.85}
         onPress={() => {
-          if (!isOnDashboard) {
-            navigation.navigate('Dashboard');
-          } else {
-            navigation.navigate('TaskEditor');
-          }
+          if (!isOnDashboard) navigation.navigate('Dashboard');
+          else                navigation.navigate('TaskEditor');
         }}
-        style={styles.plusWrap}
+        style={[styles.plusWrap, { bottom: fabBottom }]}
       >
         <LinearGradient
           colors={BORDER_GRAD}
@@ -114,58 +108,49 @@ function TabBtn({ icon, active, onPress }) {
   );
 }
 
+const BORDER_W = 1.5;          // видимая толщина рамки
+
 const styles = StyleSheet.create({
-  wrap: {
-    position:   'absolute',
-    left:       0,
-    right:      0,
-    bottom:     0,
-    alignItems: 'center',
+  wrap:{
+    position:'absolute',
+    left:0,
+    right:0,
+    bottom:0,
+    alignItems:'center',
   },
 
-  border: {
-    width:        width - 24,
-    height:       BAR,
+  /* внешняя «капсула» с градиентом */
+  border:{
+    width: width - 24,
+    height: BAR,
     borderRadius: BAR / 2,
-    padding:      0.9,           // толщина градиентного бордера
   },
 
-  bar: {
-    flex:              1,
-    backgroundColor:   DARK,
-    borderRadius:      BAR / 2,
-    flexDirection:     'row',
-    alignItems:        'center',
-    justifyContent:    'space-between',
-    paddingHorizontal: 18,
-    width:             347,
-    marginVertical:    2,
-    top:               -1,
+  /* внутренняя чёрная капсула: margin = BORDER_W вместо padding */
+  bar:{
+    flex:1,
+    margin:BORDER_W,
+    borderRadius:(BAR - BORDER_W*2) / 2,
+    backgroundColor:DARK,
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'space-between',
+    paddingHorizontal:18,
+    gap:12,
   },
 
-  btn:  { paddingHorizontal: 12 },
-  icon: { width: ICON, height: ICON, resizeMode: 'contain' },
+  btn:{ paddingHorizontal:12 },
+  icon:{ width:ICON, height:ICON, resizeMode:'contain' },
 
-  plusWrap: {
-    position:  'absolute',
-    bottom:    (BAR - PLUS) / 2 + 8, // поднимает FAB над капсулой на 8px
-    alignSelf: 'center',
-    zIndex:    5,
-  },
+  plusWrap:{ position:'absolute', alignSelf:'center', zIndex:5 },
 
-  plus: {
-    width:        PLUS,
-    height:       PLUS,
-    borderRadius: PLUS / 2,
+  plus:{
+    width:PLUS,
+    height:PLUS,
+    borderRadius:PLUS / 2,
     justifyContent:'center',
-    alignItems:   'center',
-    shadowColor:  '#000',
+    alignItems:'center',
   },
 
-  plusIcon: {
-    width:      40,
-    height:     40,
-    tintColor:  '#fff',
-    resizeMode: 'contain',
-  },
+  plusIcon:{ width:40, height:40, tintColor:'#fff', resizeMode:'contain' },
 });
