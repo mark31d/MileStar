@@ -95,7 +95,17 @@ export default function Dashboard() {
       <View style={styles.header}>
         <View style={styles.hBtnWrap}>
           <LinearGradient colors={BORDER_GRAD} style={StyleSheet.absoluteFillObject}/>
-          <TouchableOpacity onPress={nav.goBack} style={styles.hInner} hitSlop={10}>
+          <TouchableOpacity
+   hitSlop={10}
+   style={styles.hInner}
+   onPress={() => {
+     if (nav.canGoBack()) {
+       nav.goBack();
+     } else {
+      
+     }
+   }}
+ >
             <Image source={ICO_BACK} style={styles.hIco}/>
           </TouchableOpacity>
         </View>
